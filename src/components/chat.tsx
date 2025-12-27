@@ -1,88 +1,225 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { fetchServerSentEvents, useChat } from '@tanstack/ai-react'
-import { clientTools } from '@tanstack/ai-client'
-import { updateCounterToolDef } from '@/routes/api/chat'
-
-const updateCounterTool = updateCounterToolDef.client(({ count }) => {
-  localStorage.setItem('counter', count.toString())
-
-  return { success: true }
-})
+import { ChatMessage } from './chat-message'
+import { ChatSidebar } from './chat-sidebar'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Card } from '@/components/ui/card'
+import { CornerDownLeft, Loader2 } from 'lucide-react'
+import {
+  getActiveConversation,
+  createConversation,
+  setActiveConversation,
+  addMessage,
+  cleanupEmptyMessages,
+  type Conversation,
+} from '@/lib/conversation-storage'
 
 export function Chat() {
   const [input, setInput] = useState('')
+  const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  const { messages, sendMessage, isLoading } = useChat({
+  const { messages, sendMessage, isLoading, setMessages } = useChat({
     connection: fetchServerSentEvents('/api/chat'),
-    tools: clientTools(updateCounterTool),
   })
+  
+  // Initialize or load conversation on mount
+  useEffect(() => {
+    // Clean up any empty messages from previous sessions
+    cleanupEmptyMessages()
+    
+    let conversation = getActiveConversation()
+    
+    if (!conversation) {
+      // Create first conversation
+      conversation = createConversation()
+    }
+    
+    setCurrentConversation(conversation)
+    
+    // Load messages from conversation
+    if (conversation.messages.length > 0) {
+      setMessages(conversation.messages.map(msg => ({
+        id: msg.id,
+        role: msg.role,
+        parts: msg.parts || [{ type: 'text', content: msg.content }],
+      })) as any)
+    }
+  }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (input.trim() && !isLoading) {
-      sendMessage(input)
-      setInput('')
+  // Track last saved message count to avoid comparison issues
+  const lastSavedCountRef = useRef(0)
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (!currentConversation || messages.length === 0) return
+    
+    // Only save if we have new messages
+    if (messages.length <= lastSavedCountRef.current) return
+    
+    // Save new messages (from last saved count to current length)
+    // But only save messages that have actual content (to avoid saving empty streaming shells)
+    messages.slice(lastSavedCountRef.current).forEach(msg => {
+      const content = msg.parts?.filter(p => p.type === 'text').map(p => p.content).join('') ?? ''
+      
+      // Skip saving if content is empty (message is still streaming)
+      if (!content.trim()) return
+      
+      addMessage(currentConversation.id, {
+        role: msg.role,
+        content,
+        parts: msg.parts,
+      })
+      
+      // Only increment saved count if we actually saved this message
+      lastSavedCountRef.current++
+    })
+    
+    // Reload conversation to get updated data (including auto-generated title)
+    const updated = getActiveConversation()
+    if (updated) {
+      setCurrentConversation(updated)
+    }
+  }, [messages])
+  
+  // Auto scroll to bottom when messages change
+  useEffect(() => {
+    if (scrollRef.current) {
+        scrollRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages])
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    if (!input.trim() || isLoading) return
+    
+    await sendMessage(input)
+    setInput('')
+  }
+  
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+      // Create new line on Shift+Enter, submit on Enter
+      if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault()
+          handleSubmit()
+      }
+  }
+
+  const handleConversationSelect = (id: string) => {
+    setActiveConversation(id)
+    
+    // Load the selected conversation
+    const conversation = getActiveConversation()
+    if (conversation) {
+      setCurrentConversation(conversation)
+      
+      // Load messages
+      if (conversation.messages.length > 0) {
+        setMessages(conversation.messages.map(msg => ({
+          id: msg.id,
+          role: msg.role,
+          parts: msg.parts || [{ type: 'text', content: msg.content }],
+        })) as any)
+        // Reset saved count to loaded message count
+        lastSavedCountRef.current = conversation.messages.length
+      } else {
+        setMessages([])
+        lastSavedCountRef.current = 0
+      }
     }
   }
 
-  return (
-    <div className="flex flex-col h-screen">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`mb-4 ${
-              message.role === 'assistant' ? 'text-blue-600' : 'text-gray-800'
-            }`}
-          >
-            <div className="font-semibold mb-1">
-              {message.role === 'assistant' ? 'Assistant' : 'You'}
-            </div>
-            <div>
-              {message.parts.map((part, idx) => {
-                if (part.type === 'thinking') {
-                  return (
-                    <div
-                      key={idx}
-                      className="text-sm text-gray-500 italic mb-2"
-                    >
-                      💭 Thinking: {part.content}
-                    </div>
-                  )
-                }
-                if (part.type === 'text') {
-                  return <div key={idx}>{part.content}</div>
-                }
-                return null
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
+  const handleNewChat = () => {
+    const newConversation = createConversation()
+    setCurrentConversation(newConversation)
+    setMessages([])
+    lastSavedCountRef.current = 0
+  }
 
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 px-4 py-2 border rounded-lg"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            disabled={!input.trim() || isLoading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
-          >
-            Send
-          </button>
-        </div>
-      </form>
+  return (
+    <div className="flex h-screen w-full bg-muted/40">
+      {/* Sidebar */}
+      <ChatSidebar
+        activeConversationId={currentConversation?.id || null}
+        onConversationSelect={handleConversationSelect}
+        onNewChat={handleNewChat}
+      />
+
+      {/* Main Chat Area */}
+      <div className="flex flex-1 flex-col p-4 md:p-6">
+        <Card className="flex flex-1 flex-col overflow-hidden shadow-xl border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+             {/* Header */}
+             <div className="border-b p-4 bg-muted/20">
+                 <h2 className="text-lg font-semibold tracking-tight">
+                   {currentConversation?.title || 'Chat with AI'}
+                 </h2>
+                 <p className="text-sm text-muted-foreground">Powered by Gemini & TanStack AI</p>
+             </div>
+
+             {/* Message List */}
+             <div className="flex-1 overflow-y-auto w-full p-4 space-y-4">
+                 {messages.length === 0 && (
+                     <div className="flex flex-col items-center justify-center h-full text-muted-foreground space-y-4">
+                         <div className="p-4 rounded-full bg-muted">
+                             <CornerDownLeft className="h-8 w-8 text-primary/50" />
+                         </div>
+                         <div className="text-center">
+                              <h3 className="text-lg font-semibold text-foreground">Start a conversation</h3>
+                              <p className="text-sm max-w-xs mx-auto">Ask questions, generate code, or discuss ideas.</p>
+                         </div>
+                     </div>
+                 )}
+                 
+                 {messages.map((m) => (
+                     <ChatMessage 
+                         key={m.id} 
+                         role={m.role} 
+                         content={m.parts?.filter(p => p.type === 'text').map(p => p.content).join('') ?? ''}
+                         thinking={m.parts?.find(p => p.type === 'thinking')?.content}
+                     />
+                 ))}
+                 
+                 {isLoading && (
+                     <div className="flex items-center gap-2 text-sm text-muted-foreground px-4 py-2 animate-pulse">
+                         <Loader2 className="h-4 w-4 animate-spin" />
+                         <span>Thinking...</span>
+                     </div>
+                 )}
+                 
+                 <div ref={scrollRef} className="pb-4" />
+             </div>
+             
+             {/* Input Area */}
+             <div className="p-4 bg-background/50 backdrop-blur border-t">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="relative overflow-hidden rounded-xl border bg-background focus-within:ring-2 focus-within:ring-ring transition-all"
+                  >
+                    <Textarea
+                      placeholder="Type your message here..."
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      className="min-h-[60px] w-full resize-none border-0 p-4 pr-32 shadow-none focus-visible:ring-0 text-base"
+                    />
+                    <div className="absolute right-2 bottom-2">
+                      <Button type="submit" size="sm" className="gap-1.5 h-8" disabled={!input.trim() || isLoading}>
+                        Send
+                        <CornerDownLeft className="size-3.5" />
+                      </Button>
+                    </div>
+                  </form>
+                  <div className="text-center mt-2">
+                       <p className="text-[10px] text-muted-foreground">
+                        AI can make mistakes. Check important info.
+                       </p>
+                  </div>
+             </div>
+        </Card>
+      </div>
     </div>
   )
 }

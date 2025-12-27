@@ -1,310 +1,265 @@
-Welcome to your new TanStack app! 
+# TanStack AI Chat Application
 
-# Getting Started
+A modern, feature-rich AI chat application built with TanStack Start, TanStack AI, and Google Gemini. This project started as a TanStack AI tutorial example but has been significantly enhanced with chat history, multiple AI tools, and a polished user interface.
 
-To run this application:
+## ✨ Features
 
-```bash
-npm install
-npm run start
-```
+### 💬 Chat History & Persistence
+- **Persistent Conversations**: All chat conversations are saved to localStorage and persist across browser sessions
+- **Conversation Sidebar**: Browse and switch between multiple chat conversations
+- **Auto-Generated Titles**: Chat titles are automatically generated from the first user message
+- **Conversation Management**: Create new chats, delete old conversations, and switch between them seamlessly
+- **Smart Message Cleanup**: Automatically removes empty or incomplete messages
 
-# Building For Production
+### 🎨 Modern UI/UX
+- **Markdown Rendering**: Full markdown support with GitHub Flavored Markdown (GFM)
+- **Syntax Highlighting**: Beautiful code syntax highlighting using react-syntax-highlighter with VS Code Dark+ theme
+- **Responsive Design**: Mobile-friendly interface built with Tailwind CSS
+- **shadcn/ui Components**: Modern, accessible UI components including Avatar, Card, Button, Collapsible, and more
+- **Auto-Scroll**: Automatically scrolls to the latest message
+- **Thinking Blocks**: Collapsible reasoning process display for AI responses
+- **Empty State**: Helpful empty state when starting a new conversation
 
-To build this application for production:
+### 🛠️ AI Tools Integration
+
+The AI assistant has access to 6 powerful tools:
+
+1. **Weather Tool** 🌤️
+   - Get current weather information for any city
+   - Uses Open-Meteo API for accurate weather data
+   - Returns temperature, weather code, and wind speed
+
+2. **Cryptocurrency Prices** 💰
+   - Get real-time cryptocurrency prices in USD
+   - Powered by CoinGecko API
+   - Supports Bitcoin, Ethereum, and many other cryptocurrencies
+
+3. **Wikipedia Search** 📚
+   - Search Wikipedia and get article summaries
+   - Returns title, summary, and article URL
+   - Perfect for quick fact-checking and research
+
+4. **Dictionary Definitions** 📖
+   - Get word definitions with phonetic pronunciation
+   - Returns multiple definitions for comprehensive understanding
+   - Uses Free Dictionary API
+
+5. **Hacker News Stories** 📰
+   - Fetch the latest top stories from Hacker News
+   - Customizable number of stories to fetch
+   - Returns title, URL, score, and author
+
+6. **Todo List** ✅
+   - Fetch todos from JSONPlaceholder API
+   - Demonstrates server-side data fetching
+   - Optional search query filtering
+
+### 🏗️ Technical Features
+- **TypeScript**: Full type safety throughout the application
+- **TanStack Router**: File-based routing with type-safe navigation
+- **TanStack AI**: Streaming AI responses with tool calling support
+- **Google Gemini**: Powered by Gemini 2.5 Flash model
+- **Server-Sent Events**: Real-time streaming responses
+- **UUID Generation**: Unique IDs for conversations and messages
+- **Error Handling**: Graceful error handling for API failures
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ installed
+- npm or pnpm package manager
+- Google Gemini API key
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd tanstack-ai-example
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   ```
+
+   Get your Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+   The application will be available at `http://localhost:3000`
+
+### Building for Production
 
 ```bash
 npm run build
+npm run preview
 ```
 
-## Testing
+## 📁 Project Structure
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+```
+src/
+├── components/
+│   ├── chat.tsx                 # Main chat component with conversation logic
+│   ├── chat-message.tsx         # Message display with markdown rendering
+│   ├── chat-sidebar.tsx         # Conversation history sidebar
+│   └── ui/                      # shadcn/ui components
+│       ├── avatar.tsx
+│       ├── button.tsx
+│       ├── card.tsx
+│       ├── collapsible.tsx
+│       ├── input.tsx
+│       ├── scroll-area.tsx
+│       ├── separator.tsx
+│       ├── sheet.tsx
+│       ├── skeleton.tsx
+│       └── textarea.tsx
+├── lib/
+│   ├── conversation-storage.ts  # localStorage management for chat history
+│   └── utils.ts                 # Utility functions
+├── routes/
+│   ├── __root.tsx              # Root layout
+│   ├── index.tsx               # Home page with chat interface
+│   └── api/
+│       └── chat.ts             # API endpoint with AI tools
+├── types/
+│   └── react-syntax-highlighter.d.ts  # Type definitions
+└── styles.css                   # Global styles
+```
+
+## 🎯 Usage
+
+### Starting a Conversation
+
+1. Type your message in the input field at the bottom
+2. Press Enter or click the Send button
+3. The AI will respond with streaming text
+4. Your conversation is automatically saved
+
+### Using AI Tools
+
+Simply ask the AI to use its tools in natural language:
+
+- **Weather**: "What's the weather in London?"
+- **Crypto**: "What's the current price of Bitcoin?"
+- **Wikipedia**: "Tell me about the Eiffel Tower"
+- **Dictionary**: "Define the word 'serendipity'"
+- **Hacker News**: "Show me the top 5 stories on Hacker News"
+
+### Managing Conversations
+
+- **New Chat**: Click the "New Chat" button in the sidebar
+- **Switch Chats**: Click on any conversation in the sidebar
+- **Delete Chat**: Hover over a conversation and click the trash icon
+
+## 🛠️ Technology Stack
+
+### Core Framework
+- **TanStack Start**: Full-stack React framework
+- **TanStack Router**: Type-safe file-based routing
+- **TanStack AI**: AI integration with streaming support
+- **React 19**: Latest React features
+
+### AI & APIs
+- **Google Gemini**: Gemini 2.5 Flash model
+- **Open-Meteo API**: Weather data
+- **CoinGecko API**: Cryptocurrency prices
+- **Wikipedia API**: Article summaries
+- **Free Dictionary API**: Word definitions
+- **Hacker News API**: Top stories
+
+### UI & Styling
+- **Tailwind CSS 4**: Utility-first CSS framework
+- **shadcn/ui**: Beautiful, accessible component library
+- **Lucide React**: Icon library
+- **react-markdown**: Markdown rendering
+- **react-syntax-highlighter**: Code syntax highlighting
+- **remark-gfm**: GitHub Flavored Markdown support
+
+### Utilities
+- **TypeScript**: Type safety
+- **Zod**: Schema validation
+- **UUID**: Unique ID generation
+- **Vite**: Build tool and dev server
+
+## 📝 Scripts
 
 ```bash
-npm run test
+npm run dev          # Start development server on port 3000
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run test         # Run tests with Vitest
+npm run lint         # Lint code with ESLint
+npm run format       # Format code with Prettier
+npm run check        # Format and lint code
 ```
 
-## Styling
+## 🔧 Configuration
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+### Adding New AI Tools
 
+To add a new tool, edit `src/routes/api/chat.ts`:
 
-## Linting & Formatting
+1. Define the tool schema using `toolDefinition`:
+   ```typescript
+   const myToolDef = toolDefinition({
+     name: 'my_tool',
+     description: 'What the tool does',
+     inputSchema: z.object({
+       param: z.string().describe('Parameter description'),
+     }),
+     outputSchema: z.object({
+       result: z.string(),
+     }),
+   })
+   ```
 
+2. Implement the tool logic:
+   ```typescript
+   const myTool = myToolDef.server(async ({ param }) => {
+     // Tool implementation
+     return { result: 'data' }
+   })
+   ```
 
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
+3. Add the tool to the tools array in the `chat()` function
 
-```bash
-npm run lint
-npm run format
-npm run check
-```
+### Customizing the UI
 
+- **Colors**: Edit Tailwind configuration in `tailwind.config.js`
+- **Components**: Modify components in `src/components/ui/`
+- **Styles**: Update global styles in `src/styles.css`
 
-## Shadcn
+## 🤝 Contributing
 
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
+This project is a personal enhancement of the TanStack AI tutorial. Feel free to fork and customize for your own use!
 
-```bash
-pnpm dlx shadcn@latest add button
-```
+## 📄 License
 
+MIT License - see LICENSE file for details
 
+## 🙏 Acknowledgments
 
-## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
+- Original tutorial by [TanStack](https://tanstack.com)
+- UI components from [shadcn/ui](https://ui.shadcn.com)
+- Enhanced and customized by Oyasi Kelly
 
-### Adding A Route
+## 📚 Learn More
 
-To add a new route to your application just add another a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-npm install @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
-
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// ...
-
-const queryClient = new QueryClient();
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
-
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export default App;
-```
-
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
-
-## State Management
-
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
-
-First you need to add TanStack Store as a dependency:
-
-```bash
-npm install @tanstack/store
-```
-
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
-
-export default App;
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
-
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
-}
-
-export default App;
-```
-
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
-
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
-
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+- [TanStack Start Documentation](https://tanstack.com/start)
+- [TanStack AI Documentation](https://tanstack.com/ai)
+- [TanStack Router Documentation](https://tanstack.com/router)
+- [Google Gemini API](https://ai.google.dev)
+- [shadcn/ui](https://ui.shadcn.com)
