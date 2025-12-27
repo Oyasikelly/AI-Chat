@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { MessageSquarePlus, Trash2 } from 'lucide-react'
+import { MessageSquarePlus, Trash2, X } from 'lucide-react'
 import {
   getConversations,
   deleteConversation,
@@ -16,12 +16,16 @@ interface ChatSidebarProps {
   activeConversationId: string | null
   onConversationSelect: (id: string) => void
   onNewChat: () => void
+  isOpen?: boolean
+  onClose?: () => void
 }
 
 export function ChatSidebar({
   activeConversationId,
   onConversationSelect,
   onNewChat,
+  isOpen = true,
+  onClose,
 }: ChatSidebarProps) {
   const [conversations, setConversations] = useState<Conversation[]>([])
 
@@ -76,17 +80,45 @@ export function ChatSidebar({
 
   return (
     <div className="flex h-full w-64 flex-col border-r bg-muted/20">
-      {/* Header */}
-      <div className="p-4">
-        <Button
-          onClick={onNewChat}
-          className="w-full gap-2"
-          variant="default"
-        >
-          <MessageSquarePlus className="h-4 w-4" />
-          New Chat
-        </Button>
-      </div>
+      {/* Mobile Overlay */}
+      {isOpen && onClose && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={cn(
+        "flex h-full flex-col border-r bg-muted/20 transition-transform duration-300 ease-in-out z-50",
+        // Mobile: fixed position, full height, slide in from left
+        "fixed inset-y-0 left-0 w-[280px] lg:relative lg:w-64",
+        // Hide on mobile when closed
+        !isOpen && "-translate-x-full lg:translate-x-0"
+      )}>
+        {/* Header */}
+        <div className="p-4 flex items-center justify-between gap-2">
+          <Button
+            onClick={onNewChat}
+            className="w-full flex-1 gap-2"
+            variant="default"
+          >
+            <MessageSquarePlus className="h-4 w-4" />
+            New Chat
+          </Button>
+          
+          {/* Close button for mobile */}
+          {onClose && (
+            <Button
+              onClick={onClose}
+              variant="ghost"
+              size="icon"
+              className="lg:hidden h-9 w-9"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
 
       <Separator />
 
@@ -129,6 +161,7 @@ export function ChatSidebar({
           )}
         </div>
       </ScrollArea>
+      </div>
     </div>
   )
 }

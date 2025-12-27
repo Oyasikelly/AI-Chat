@@ -21,15 +21,15 @@ export function ChatMessage({ role, content, thinking }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        'flex w-full items-start gap-4 p-4',
+        'flex w-full items-start gap-2 sm:gap-4 p-2 sm:p-4',
         isUser ? 'flex-row-reverse' : 'flex-row'
       )}
     >
-      <Avatar className={cn("h-8 w-8", isUser ? "bg-primary" : "bg-muted")}>
+      <Avatar className={cn("h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0", isUser ? "bg-primary" : "bg-muted")}>
         <AvatarFallback>{isUser ? 'U' : 'AI'}</AvatarFallback>
       </Avatar>
 
-      <div className={cn("flex flex-col gap-2 max-w-[80%]", isUser ? "items-end" : "items-start")}>
+      <div className={cn("flex flex-col gap-2 max-w-[95%] sm:max-w-[85%] md:max-w-[80%]", isUser ? "items-end" : "items-start")}>
         {/* Thinking Block */}
         {thinking && (
           <ThinkingBlock content={thinking} />
@@ -38,7 +38,7 @@ export function ChatMessage({ role, content, thinking }: ChatMessageProps) {
         {/* Message Content */}
         <div
           className={cn(
-            'rounded-lg px-4 py-3 text-sm shadow-sm',
+            'rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm shadow-sm',
             isUser
               ? 'bg-primary text-primary-foreground'
               : 'bg-card border text-card-foreground'
@@ -51,7 +51,7 @@ export function ChatMessage({ role, content, thinking }: ChatMessageProps) {
                 const match = /language-(\w+)/.exec(className || '')
                 return !inline && match ? (
                   <div className="relative rounded-md overflow-hidden my-2">
-                    <div className="flex items-center justify-between px-4 py-1.5 bg-zinc-900 border-b border-zinc-800">
+                    <div className="flex items-center justify-between px-3 sm:px-4 py-1.5 bg-zinc-900 border-b border-zinc-800">
                          <span className="text-xs text-zinc-400">{match[1]}</span>
                          {/* Copy button could go here */}
                     </div>
@@ -60,13 +60,14 @@ export function ChatMessage({ role, content, thinking }: ChatMessageProps) {
                       style={vscDarkPlus}
                       language={match[1]}
                       PreTag="div"
-                      customStyle={{ margin: 0, borderRadius: 0 }}
+                      customStyle={{ margin: 0, borderRadius: 0, fontSize: '0.75rem' }}
+                      className="text-xs sm:text-sm"
                     >
                       {String(children).replace(/\n$/, '')}
                     </SyntaxHighlighter>
                   </div>
                 ) : (
-                  <code {...props} className={cn("bg-black/10 dark:bg-white/10 px-1 py-0.5 rounded font-mono", className)}>
+                  <code {...props} className={cn("bg-black/10 dark:bg-white/10 px-1 py-0.5 rounded font-mono text-xs sm:text-sm", className)}>
                     {children}
                   </code>
                 )

@@ -7,7 +7,7 @@ import { ChatSidebar } from './chat-sidebar'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
-import { CornerDownLeft, Loader2 } from 'lucide-react'
+import { CornerDownLeft, Loader2, Menu } from 'lucide-react'
 import {
   getActiveConversation,
   createConversation,
@@ -20,6 +20,7 @@ import {
 export function Chat() {
   const [input, setInput] = useState('')
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const { messages, sendMessage, isLoading, setMessages } = useChat({
@@ -137,6 +138,7 @@ export function Chat() {
     setCurrentConversation(newConversation)
     setMessages([])
     lastSavedCountRef.current = 0
+    setIsSidebarOpen(false) // Close sidebar on mobile after creating new chat
   }
 
   return (
@@ -144,23 +146,40 @@ export function Chat() {
       {/* Sidebar */}
       <ChatSidebar
         activeConversationId={currentConversation?.id || null}
-        onConversationSelect={handleConversationSelect}
+        onConversationSelect={(id) => {
+          handleConversationSelect(id)
+          setIsSidebarOpen(false) // Close sidebar on mobile after selecting conversation
+        }}
         onNewChat={handleNewChat}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* Main Chat Area */}
-      <div className="flex flex-1 flex-col p-4 md:p-6">
+      <div className="flex flex-1 flex-col p-2 sm:p-4 md:p-6">
         <Card className="flex flex-1 flex-col overflow-hidden shadow-xl border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
              {/* Header */}
-             <div className="border-b p-4 bg-muted/20">
-                 <h2 className="text-lg font-semibold tracking-tight">
-                   {currentConversation?.title || 'Chat with AI'}
-                 </h2>
-                 <p className="text-sm text-muted-foreground">Powered by Gemini & TanStack AI</p>
+             <div className="border-b p-3 sm:p-4 bg-muted/20 flex items-center gap-3">
+                 {/* Hamburger Menu for Mobile */}
+                 <Button
+                   variant="ghost"
+                   size="icon"
+                   className="lg:hidden h-9 w-9 flex-shrink-0"
+                   onClick={() => setIsSidebarOpen(true)}
+                 >
+                   <Menu className="h-5 w-5" />
+                 </Button>
+                 
+                 <div className="flex-1 min-w-0">
+                   <h2 className="text-base sm:text-lg font-semibold tracking-tight truncate">
+                     {currentConversation?.title || 'Chat with AI'}
+                   </h2>
+                   <p className="text-xs sm:text-sm text-muted-foreground">Powered by Gemini & TanStack AI</p>
+                 </div>
              </div>
 
              {/* Message List */}
-             <div className="flex-1 overflow-y-auto w-full p-4 space-y-4">
+             <div className="flex-1 overflow-y-auto w-full p-2 sm:p-4 space-y-3 sm:space-y-4">
                  {messages.length === 0 && (
                      <div className="flex flex-col items-center justify-center h-full text-muted-foreground space-y-4">
                          <div className="p-4 rounded-full bg-muted">
@@ -193,7 +212,7 @@ export function Chat() {
              </div>
              
              {/* Input Area */}
-             <div className="p-4 bg-background/50 backdrop-blur border-t">
+             <div className="p-2 sm:p-4 bg-background/50 backdrop-blur border-t">
                   <form
                     onSubmit={handleSubmit}
                     className="relative overflow-hidden rounded-xl border bg-background focus-within:ring-2 focus-within:ring-ring transition-all"
@@ -203,10 +222,10 @@ export function Chat() {
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
-                      className="min-h-[60px] w-full resize-none border-0 p-4 pr-32 shadow-none focus-visible:ring-0 text-base"
+                      className="min-h-[60px] w-full resize-none border-0 p-3 pr-20 sm:p-4 sm:pr-32 shadow-none focus-visible:ring-0 text-sm sm:text-base"
                     />
-                    <div className="absolute right-2 bottom-2">
-                      <Button type="submit" size="sm" className="gap-1.5 h-8" disabled={!input.trim() || isLoading}>
+                    <div className="absolute right-1.5 bottom-1.5 sm:right-2 sm:bottom-2">
+                      <Button type="submit" size="sm" className="gap-1.5 h-8 text-xs sm:text-sm" disabled={!input.trim() || isLoading}>
                         Send
                         <CornerDownLeft className="size-3.5" />
                       </Button>
