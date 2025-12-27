@@ -58,24 +58,28 @@ export function Chat() {
   useEffect(() => {
     if (!currentConversation || messages.length === 0) return
     
-    // Only save if we have new messages
-    if (messages.length <= lastSavedCountRef.current) return
-    
-    // Save new messages (from last saved count to current length)
-    // But only save messages that have actual content (to avoid saving empty streaming shells)
-    messages.slice(lastSavedCountRef.current).forEach(msg => {
+    // Save or update messages in storage
+    messages.forEach((msg, index) => {
+      // Get text content from parts
       const content = msg.parts?.filter(p => p.type === 'text').map(p => p.content).join('') ?? ''
       
+      // If we already saved more messages than this index, we might need to update the existing one
+      // (especially for the last message which might have been a streaming shell)
+      if (index < lastSavedCountRef.current) {
+         // Optionally update existing message if it was empty before
+         // For now, let's focus on appending new ones correctly
+         return
+      }
+
       // Skip saving if content is empty (message is still streaming)
       if (!content.trim()) return
       
       addMessage(currentConversation.id, {
-        role: msg.role,
+        role: msg.role as 'user' | 'assistant',
         content,
         parts: msg.parts,
       })
       
-      // Only increment saved count if we actually saved this message
       lastSavedCountRef.current++
     })
     
@@ -84,7 +88,7 @@ export function Chat() {
     if (updated) {
       setCurrentConversation(updated)
     }
-  }, [messages])
+  }, [messages, currentConversation?.id])
   
   // Auto scroll to bottom when messages change
   useEffect(() => {
