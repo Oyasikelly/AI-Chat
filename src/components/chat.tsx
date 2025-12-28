@@ -160,8 +160,8 @@ export function Chat() {
       />
 
       {/* Main Chat Area */}
-      <div className="flex flex-1 flex-col p-2 sm:p-4 md:p-6">
-        <Card className="flex flex-1 flex-col overflow-hidden shadow-xl border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex flex-1 flex-col p-0 sm:p-4 md:p-6 overflow-hidden">
+        <Card className="flex flex-1 flex-col overflow-hidden shadow-none sm:shadow-xl border-0 sm:border border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-none sm:rounded-xl">
              {/* Header */}
              <div className="border-b p-3 sm:p-4 bg-muted/20 flex items-center gap-3">
                  {/* Hamburger Menu for Mobile */}

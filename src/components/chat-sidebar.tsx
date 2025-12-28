@@ -79,7 +79,7 @@ export function ChatSidebar({
   }
 
   return (
-    <div className="flex h-full w-64 flex-col border-r bg-muted/20">
+    <>
       {/* Mobile Overlay */}
       {isOpen && onClose && (
         <div 
@@ -90,9 +90,9 @@ export function ChatSidebar({
       
       {/* Sidebar */}
       <div className={cn(
-        "flex h-full flex-col border-r bg-muted/20 transition-transform duration-300 ease-in-out z-50",
+        "flex h-full flex-col border-r bg-muted transition-all duration-300 ease-in-out z-50 overflow-hidden",
         // Mobile: fixed position, full height, slide in from left
-        "fixed inset-y-0 left-0 w-[280px] lg:relative lg:w-64",
+        "fixed inset-y-0 left-0 w-[70%] lg:relative lg:w-72",
         // Hide on mobile when closed
         !isOpen && "-translate-x-full lg:translate-x-0"
       )}>
@@ -139,8 +139,8 @@ export function ChatSidebar({
                 )}
                 onClick={() => onConversationSelect(conversation.id)}
               >
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">
+                <div className="flex-1 min-w-0 pr-2">
+                  <div className="font-medium text-sm whitespace-normal break-words line-clamp-2">
                     {conversation.title}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -151,10 +151,10 @@ export function ChatSidebar({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="h-8 w-8 p-0 flex-shrink-0 text-muted-foreground hover:text-destructive opacity-100 transition-opacity"
                   onClick={(e) => handleDelete(conversation.id, e)}
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             ))
@@ -162,6 +162,6 @@ export function ChatSidebar({
         </div>
       </ScrollArea>
       </div>
-    </div>
+    </>
   )
 }
